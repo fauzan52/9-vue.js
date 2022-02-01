@@ -1,0 +1,195 @@
+Memulai Vue.js
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script>
+	new Vue()
+
+Variabel member, variabel vm
+	const member = {
+		// tipe data
+		name: 'Fauzan Alghifari',
+		message: "Hello world"
+	}
+	const vm = new Vue({
+		el: '#app',
+		data: member
+	})
+keterangan : # untuk id, titik untuk class
+
+Menampilkan data name
+<h1>{{ name }}</h1>
+
+Merubah data di console (browser > inspect element > console)
+vm.$data.name="New Name"
+
+Memberikan aturan variabel tidak dapat diubah , yaitu v-once
+<h1 v-once>{{ name }}</h1>
+
+Menjumlahkan data number otomatis
+<h1 v-once>{{ 1+1 }}</h1>
+
+Menambahkan variabel ditambahkan data baru
+<h1 v-once>{{ name + 'S.Kom'}}</h1>
+
+Menampilkan data menjadi huruf kapital semua
+<h1 v-once>{{ name.toUpperCase() }}</h1>
+
+Method
+<h1 v-once>{{ getname() }}</h1>
+methods: {
+			getname: function() {
+				return "Hello, " +this.name
+			}
+
+Menampilkan data (directive)
+ <h1 v-text="name"></h1>
+
+ hyperlink
+ <h1 v-html="link"></h1>
+ link: '<a href="latihan1.html"> Tes Link </a>'
+
+ upload gambar (v-bind)
+ <img v-bind:src="picture">
+ picture: 'img/vue.png'
+
+ Button active
+	<button v-bind:class="{active: menu === 'home'}" v-on:click="menu = 'home'">Home</button>
+	<button v-bind:class="{active: menu === 'post'}" v-on:click="menu = 'post'">Post</button>
+	<button v-bind:class="{active: menu === 'about'}" v-on:click="menu = 'about'">About</button>
+
+v-model
+<input type="text" v-model="name">
+
+v-for
+<li v-for="item of newclass">{{ item }}</li>
+newclass: ['Kelas 1', 'Kelas 2', 'Kelas 3']
+
+
+Perintah if else. artinya : data nya lebih besar dari angka 7 maka eksekusi
+<h3>Daftar Kelas ({{ newclass.length }})</h3>
+	<ul v-if="newclass.length > 7">
+		<li v-for="(item, index) of newclass">{{ index+1 }}. {{ item }}</li>
+	</ul>
+	<li v-else><b>Data tidak ada</b></li>
+	newclass: ['Kelas 1', 'Kelas 2', 'Kelas 3'],
+
+
+v-show (menampilkan data seperti fitur v-if)
+	<h3>Daftar Kelas ({{ newclass.length }})</h3>
+	<ul v-show="newclass.length > 1">
+		<li v-for="(item, index) of newclass">{{ index+1 }}. {{ item }}</li>
+
+v-if template
+	<template v-if="newclass.length > 1">
+	<ul>
+		<li v-for="(item, index) of newclass">{{ index+1 }}. {{ item }}</li>
+	</ul>		
+	</template>
+
+Pindah halaman tanpa refresh
+	<a v-bind:class="{active: menu === 'home'}" href="#" v-on:click.prevent="switchmenu ('home')">Home</a>
+	<a v-bind:class="{active: menu === 'post'}" href="#"v-on:click.prevent="switchmenu  ('post')">Post</a>
+	<a v-bind:class="{active: menu === 'about'}" href="#" v-on:click.prevent="switchmenu ('about')">About</a>
+	switchmenu: function(data){
+				this.menu = data
+			}
+
+Menambahkan masukkan dihalaman yang sama
+<h3>Form</h3>
+<p><input type="text" name="#" placeholder="Masukkan data" v-on:keyup.enter="submit"></p>
+	<h3>{{ newclass }}</h3>
+	newclass: ['Kelas 1', 'Kelas 2', 'Kelas 3'],
+	submit: function(inputevent){
+				let text = inputevent.target.value
+				this.newclass.push(text)
+				inputevent.target.value = ""
+
+RADIO BUTTON
+<h3>Radio Button</h3>
+		<label><input type="radio" value="Vue JS" v-model="radiobutton">Vue JS</label>
+		<label><input type="radio" value="Javascript" v-model="radiobutton">Javascript</label>
+		<label><input type="radio" value="PHP" v-model="radiobutton">PHP</label>
+		<br>
+<span>Picked : {{ radiobutton }}</span>
+		radiobutton: ['Pilih salah satu']
+
+
+HAPUS DATA
+<a href="" v-on:click.prevent="$emit('hapuskelas')">Hapus</a>
+	<main>
+		<kelas v-bind:items="kelas" v-bind:input="kelasbaru" v-on:hapuskelas="hapuskelas"></kelas>
+		<home></home>
+	</main>
+		methods: {
+			hapuskelas: function(index){
+				this.kelas.splice(index, 1)
+				}
+
+MENJALANKAN SERVER
+mode: 'history',
+buka terminal gitbash
+cd d:/fauzan/vue
+php -S localhost:3000
+lalu login ke browser localhost:3000
+
+UPLOAD GAMBAR
+<input type="file" v-on:change="upload"></input>
+
+
+VALIDASI VUE JS 
+.error {
+			color:  red;
+		}
+
+<div class="error" v-if="error.judul"><small>{{ error.judul }}</small></div>
+data: {
+	error: {
+					judul: '',
+					deskripsi: ''
+				}
+}
+methods: {
+	submitkelas: function(){
+		if(this.kelas.judul == ''){
+					this.error.judul = 'Judul tidak boleh kosong'
+
+				}
+	}
+}
+
+
+
+LOCALSTORAGE (Penyimpanan lokal) dengan metode JSON (javascript)
+localStorage.setItem('kelas',JSON.stringify(this.kelas))
+created(){
+			this.kelas = JSON.parse(localStorage.getItem('kelas')) || []
+		},
+
+
+ANIMASI SWEET ALERT
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+swal({
+					title: this.kelas.judul,
+					text: 'Data berhasil disimpan',
+					icon: 'success'
+				})
+
+TAMBAH DATA LEWAT JSON
+created(){
+			this.kelas = JSON.parse(localStorage.getItem('kelas')) || []
+		},
+		met
+
+
+
+CONSOLE FIREBASE
+CONSOLE FIREBASE
+CONSOLE FIREBASE
+
+Membuat database
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.5/firebase-database.js";
+const db = firebase.database()
+const kelasRef = db.ref('kelas')
+created(){
+			kelasRef.on('value', this.resultData, this.errorData)
+		},
+		

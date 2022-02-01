@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Vue</title>
+	<style>
+		body {
+			margin:  5%;
+			font-family: 'Quicksand', sans-seri;f
+		}
+
+		.active {
+			background: red;
+			border: 0;
+			padding: 5px;
+		}
+
+		.error {
+			color:  red;
+		}
+
+		.input-group {
+			margin-bottom: 5px;
+		}
+	</style>
+</head>
+<body>
+<div id="app">
+<header-component name="Fauzan Alghifari" image="img/vue.png"></header-component>
+	<nav>
+		<router-link to="/">Home</router-link>
+    	<router-link to="/post">Post</router-link>
+    	<router-link to="/about">About</router-link>
+    	<router-link to="/kelas">Kelas</router-link>
+	</nav>
+
+	<main>
+		<!-- <kelas v-bind:items="kelas" v-bind:input="kelasbaru" v-on:hapuskelas="hapuskelas"></kelas> -->
+		<!-- <home></home> -->
+		<router-view v-bind:items="kelas"  v-on:submitkelas="submitkelas" v-on:hapuskelas="hapuskelas"  ></router-view>
+	</main>
+<footer-component></footer-component>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+<script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.5/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAWIa1s9HwudkdE-DlblK_e-KQ_NaxDcsw",
+    authDomain: "tutorial-vuejs-6648a.firebaseapp.com",
+    databaseURL: "https://tutorial-vuejs-6648a.firebaseio.com",
+    projectId: "tutorial-vuejs-6648a",
+    storageBucket: "tutorial-vuejs-6648a.appspot.com",
+    messagingSenderId: "754081266576",
+    appId: "1:754081266576:web:44e48df4e9153bfa22d115"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const database = firebase.database()
+  const kelasRef = database.ref('kelas')
+</script>
+<script>
+	const NotFound = {
+		template: '<div>Halaman tidak ditemukan</div>'
+	}
+	const Home = {
+		template: '<div>Home</div>'
+	}
+
+	const Post = {
+		template: '<div>Post</div>'
+	}
+
+	const About = {
+		template: '<div>About</div>'
+	}
+
+	const detailKelas = {
+		template: `<div>
+		<img :src="url_gambar(detailkelas.gambar)" width="200">
+		<h3>{{ detailkelas.judul }} - {{ $route.params.idkelas }}</h3>
+		<p>{{ detailkelas.deskripsi }}</p>
+		<router-link to="/kelas">Kembali</router-link>
+		</div>`,
+
+		data() {
+			return {
+				detailkelas: {}
+			}
+		},
+		created(){
+			this.filterkelas()
+		},
+		methods: {
+			filterkelas(){
+				let kelas = JSON.parse(localStorage.getItem('kelas'))
+				let id = this.$route.params.idkelas
+				let item = kelas.filter(k => k.id == id)
+				this.detailkelas = item[0]
+			},
+			url_gambar: function (gambar){
+				return '../img/' +gambar
+			}
+		}
+	}
+
+	const Kelas = {
+		props: ['items'],
+		template: `
+		<div>
+			<h3>Tambah data</h3>
+			<form v-on:submit.prevent="submitkelas">
+				<div class="input-group"></div>
+				<label>Judul : </label><br>
+				<div><input type="text" v-model="kelas.judul" placeholder="Masukkan judul"><div>
+				<div class="error" v-if="error.judul"><small>{{ error.judul }}</small></div>
+				<br>
+				<div class="input-group">
+					<label>Deskripsi : </label><br>
+					<textarea v-model="kelas.deskripsi"></textarea>
+					<div class="error" v-if="error.judul"><small>{{ error.deskripsi }}</small></div>
+				</div>
+
+				<div class="input-group">
+					<img :src="previewimg" v-if="previewimg" width="200">
+					<br>
+					<label>Masukkan gambar</label><br>
+					<input type="file" ref="gambar" v-on:change="upload"></input>
+				</div><br>
+				<button type="submit">submit</button>
+			</form>
+			<hr>
+			<alert-box>
+  					Something bad happened.
+			</alert-box>
+			<h3>Daftar Kelas ({{ items.length }})</h3>
+				<template v-if="items.length">
+					<li v-for="(item, index) of items">
+					<img :src="url_gambar(item.gambar)" width="200">
+					<p>
+					{{ index+1 }} - {{ item.judul }}
+					<a href="" v-on:click.prevent="$emit('hapuskelas', item.id)">Hapus</a>
+					<router-link :to="'/kelas/' + item.id">Detail</router-link>
+					</p>
+					</li>
+				</ul>
+				</template>
+				<li v-else>Data tidak tersedia </li>
+		</div>
+		`, 
+		data: function(){
+			return {
+				kelas: {
+					judul: '',
+					deskripsi: '',
+					gambar: '', 
+				},
+				previewimg: "",
+				error: {
+					judul: '',
+					deskripsi: ''
+				}
+			}
+		},
+		methods: { 
+			submitkelas: function(){
+				this.error.judul = ""
+				this.error.deskripsi = ""
+				if(this.kelas.judul == ''){
+					this.error.judul = 'Judul tidak boleh kosong'
+
+				}
+
+				if(this.kelas.deskripsi == ''){
+					this.error.deskripsi = 'Deskripsi tidak boleh kosong'
+
+				}
+
+				if(this.kelas.judul && this.kelas.deskripsi){
+					const data = {
+					id: uuidv4(),
+					judul: this.kelas.judul,
+					deskripsi: this.kelas.deskripsi,
+					gambar: this.kelas.gambar
+				}
+					this.$emit('submitkelas', data)
+					this.kelas.judul = ""
+					this.kelas.deskripsi = ""
+					this.kelas.gambar = ""
+					this.previewimg = ""
+					this.$refs.gambar.value = ""
+				}
+
+				
+			},
+			upload: function(event){
+				const namagambar = event.target.files [0].name
+				this.kelas.gambar = namagambar
+				this.previewimg = URL.createObjectURL(event.target.files [0])
+			},
+			url_gambar: function (gambar){
+				return 'img/' +gambar
+			}
+		}
+	}
+
+	Vue.component('header-component',{
+		props: ['name', 'image'],
+		template: `
+			<header>
+				<img :src="image" width="300">
+				<p>{{ 'Hello, ' +name}}</p>
+			</header>
+		`,
+		data: function(){
+			return {
+			
+				}
+			}
+		}),
+	
+		
+	
+
+	Vue.component('footer-component',{
+		template: `
+			<footer id="footer">
+				<p>Copyright 2021</p>
+			</footer>	
+		`
+	})
+
+	
+
+	Vue.component('alert-box', {
+		template:  `<div class="demo-alert-box">
+      				<slot></slot>
+    				</div>`
+	})
+
+
+
+	Vue.component('kelas',{
+		
+		})
+
+	const routes = [
+  		{ path: '/', component: Home },
+  		{ path: '/post', component: Post },
+  		{ path: '/about', component: About },
+  		{ path: '/kelas', component: Kelas },
+  		{ path: '/kelas/:idkelas', component: detailKelas},
+  		{ path: '*', component: NotFound },
+	]
+	
+	const router = new VueRouter({
+		mode: 'history',
+  		routes // short for `routes: routes`
+	})
+
+	const vm = new Vue({
+		el: '#app',
+		router,
+		components: {
+			'home' : Home
+		},
+		data: {
+			// kelas: [
+			// 	{id: 1, judul: 'VueJS', deskripsi: 'Vue JS adalah Vue JS', gambar: 'vue.png'},
+			// 	{id: 2, judul: 'Javasciprt', deskripsi: 'Javascript adalah Javascript', gambar: 'javascript.png'}
+			// ]
+			kelas : []
+		},
+		created(){
+			kelasRef.on('value', this.resultData, this.errorData)
+		},
+		beforeCreate(){
+			console.log('before-create')	
+		},
+		mounted(){
+			console.log('mounted')
+		},
+		beforeUpdate(){
+			console.log('before-update')
+		},
+		updated(){
+			console.log('updated')
+		},
+
+		methods: {
+			resultData(items){
+				console.log(items)
+			},
+			errorData(error){
+				console.log(error)
+			},
+			hapuskelas: function(id){
+				this.kelas = this.kelas.filter(item => item.id != id)
+				localStorage.setItem('kelas', JSON.stringify(this.kelas))
+
+				swal({
+					text: 'Data berhasil dihapus',
+					icon: 'warning'
+				})
+				},
+			submitkelas: function(data){
+				this.kelas.push(data)
+				localStorage.setItem('kelas', JSON.stringify(this.kelas))
+
+				swal({
+					title: data.judul,
+					text: 'Data berhasil disimpan',
+					icon: 'success'
+				})
+			}
+		},
+		computed: {
+		}
+	})
+
+	vm.$mount ('#app')
+</script>
+</body>
+</html>

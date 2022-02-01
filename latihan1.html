@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Vue</title>
+	<style>
+		body {
+			margin:  5%;
+			font-family: 'Quicksand', sans-seri;f
+		}
+
+		.active {
+			background: red;
+			border: 0;
+			padding: 5px;
+		}
+	</style>
+</head>
+<body>
+
+<div id="app">
+<header>
+	<img src="img/vue.png" width="80">
+	<h1 v-once>{{ 1+1 }}</h1>
+	<h1 v-once>{{ name }}</h1>
+	<h1 v-once>{{ name + ' S.Kom'}}</h1>
+	<h1 v-once>{{ name.toUpperCase() }}</h1>
+	<h1 v-once>{{ isactive ? 'sucess' : 'danger' }}</h1>
+	<h1 v-once>{{ getname() }}</h1>
+	<h1>{{ getname() }}</h1>
+	<h1>{{ qty }}</h1>
+	<h1>{{ fullname }}</h1>
+	<h1>{{ bilangan }} adalah bilangan {{ ganjilataugenap }}</h1>
+	<h1 v-text="name"></h1>
+	<h1 v-html="link"></h1>
+	<h1 v-text="name.toUpperCase()"></h1>
+	<h1 v-text="bilangan"></h1>
+	<p>
+		<button v-on:click="clickbilangan">Click</button> Untuk otomatis bilangan bertambah satu
+	</p>
+	<img v-bind:src="picture">
+	<p>
+		<button v-on:click="clickpicture">Click</button> Untuk merubah gambar
+	</p>
+	<br>
+	<h1>What is Vue.js</h1>
+	<p>The Progressive Javascript Framework</p>
+	<button v-bind:class="{active: menu === 'home'}" v-on:click="menu = 'home'">Home</button>
+	<button v-bind:class="{active: menu === 'post'}" v-on:click="menu = 'post'">Post</button>
+	<button v-bind:class="{active: menu === 'about'}" v-on:click="menu = 'about'">About</button>
+
+	
+	<p>{{ classcheckbox }}</p>
+	<div>
+		<label><input type="checkbox" value="Vue JS" v-model="classcheckbox">Vue JS</label>
+		<label><input type="checkbox" value="Javascript" v-model="classcheckbox">Javascript</label>
+		<label><input type="checkbox" value="PHP" v-model="classcheckbox">PHP</label>
+	</div>
+	
+
+	<p><input type="text" v-model="name"></p>
+	<ul>
+		<!-- <li v-for="c in classcheckbox">{{ c }}</li> -->
+		<li v-for="item of kelas">{{ item }}</li>
+		<li v-for="(item, index) of kelas">{{ index+1 }} - {{ item }}</li>
+	</ul>
+	
+	<h3>Perulangan</h3>
+		<ul>
+			<li v-for="x in 5">{{ x }}</li>
+		</ul>
+
+	<h3>Bilang genap dari {{ number }} adalah </h3>
+	<h3 v-for="x in genap(number) ">{{ x }}</h3>
+
+	<h3>Daftar Kelas ({{ kelas.length }})</h3>
+	<ul v-if="kelas.length > 7">
+		<li v-for="(item, index) of kelas">{{ index+1 }}. {{ item }}</li>
+	</ul>
+	<li v-else><b>Data tidak ada</b></li>
+
+	<h3>Daftar Kelas ({{ kelas.length }})</h3>
+	<ul v-show="kelas.length > 1">
+		<li v-for="(item, index) of kelas">{{ index+1 }}. {{ item }}</li>
+	</ul>
+
+	<template v-if="kelas.length > 1">
+	<ul>
+		<li v-for="(item, index) of kelas">{{ index+1 }}. {{ item }}</li>
+	</ul>		
+	</template>
+	<li v-else><b>Data tidak ada</b></li>
+
+	<a v-bind:class="{active: menu === 'home'}" href="#" v-on:click.prevent="switchmenu ('home')">Home</a>
+	<a v-bind:class="{active: menu === 'post'}" href="#"v-on:click.prevent="switchmenu  ('post')">Post</a>
+	<a v-bind:class="{active: menu === 'about'}" href="#" v-on:click.prevent="switchmenu ('about')">About</a>
+
+
+<h3>Radio Button</h3>
+		<label><input type="radio" value="Vue JS" v-model="radiobutton">Vue JS</label>
+		<label><input type="radio" value="Javascript" v-model="radiobutton">Javascript</label>
+		<label><input type="radio" value="PHP" v-model="radiobutton">PHP</label>
+		<br>
+<span>Picked : {{ radiobutton }}</span>
+
+<h3>Form</h3>
+<p><input type="text" name="#" placeholder="Masukkan data" v-on:keyup.enter="submit" v-model="kelasbaru"></p>
+<ul>
+	<li v-for="(item, index) of kelas">{{ index+1 }} - {{ item }}</li>
+</ul>
+
+</header>
+<footer id="footer">
+	<p>Copyright 2021</p>
+</footer>	
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script>
+	const member = {
+		// tipe data
+		name: 'Fauzan Alghifari',
+		message: "Hello world",
+		isactive: true,
+		qty: 10,
+		firstname: 'Fauzan',
+		lastname: ' Alghifari',
+		bilangan: 1,
+		link: '<a href="latihan1.html"> Tes Link </a>',
+		picture: 'img/vue.png',
+		menu: 'home',
+		classcheckbox: [],
+		kelas: ['Kelas 1', 'Kelas 2', 'Kelas 3'],
+		kelasbaru: "",
+		number: [1,2,3,4,5,6,7,8,9,10],
+		radiobutton: ['Pilih salah satu']
+		
+	}
+	const vm = new Vue({
+		el: '#app',
+		data: member,
+		methods: {
+			getname: function() {
+				return "Hello, " +this.name
+			},
+			changename: function(newname){
+				this.name = newname
+			},
+			clickbilangan: function(){
+				this.bilangan++
+			},
+			clickpicture: function(){
+				this.picture = 'img/javascript.png'
+			},
+			genap: function(datanumber){
+				return datanumber.filter(angka => {
+					return angka % 2 == 0
+				})
+			},
+			switchmenu: function(data){
+				this.menu = data
+			},
+			submit: function(inputevent){
+				let text = inputevent.target.value
+				this.kelas.unshift(this.kelasbaru)
+				this.kelasbaru = ""
+			},
+
+		},
+
+		computed: {
+			total: function () {
+				return this.qty * 10000
+			},
+			fullname: function() {
+				return this.firstname + this.lastname
+			},
+			ganjilataugenap: function(){
+				return this.bilangan%2===0 ? 'genap' : 'ganjil'
+			}
+		}
+	})
+</script>
+</body>
+</html>
